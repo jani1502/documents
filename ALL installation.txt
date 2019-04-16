@@ -219,7 +219,45 @@ $ kubectl apply --filename https://git.io/weave-kube-1.6
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
+JFROG INSTALLATION:
+
+$ wget https://bintray.com/jfrog/artifactory-pro-rpms/rpm -O bintray-jfrog-artifactory-pro-rpms.repo;
+$sudo mv bintray-jfrog-artifactory-pro-rpms.repo /etc/yum.repos.d/;
+$ yum install jfrog-artifactory-pro
+
+
+JFROG INSTALLATION ON UBUNTU
+$ echo "deb https://jfrog.bintray.com/artifactory-pro-debs {distribution} {components}" | sudo tee -a /etc/apt/sources.list;
+$ sudo apt-get update
+$ sudo apt-get install jfrog-artifactory-pro
+
+-------------------------------------------------------------------------------------------------------------
+
+CHEF INSTALLATION:
+
+-> create account in -->manage.chef.io  ----------------->hosted server
+->install workstation on laptop -->install chefdk   --->on laptop
+-->one instance launch in AWS --> node
+
+-->from hosted server download startedkit  -->extract files  --->which establish connection btw workstation to hosted server.
+-->run bootstrap command in workstation which establish connection btw workstation to node -->it install agent (cc)chef-client.
+-->chef-client create connection between node to server.
+
+$knife bootsrap <publicip node> --ssh-user ubuntu --sudo --identity-file "pemfile location of node" -N <nodename/any name>
+
+cookbooks$chef generate cookbook <cookbookname/any name>
+cookbookname$chef generate recipe . <anyrecipename>
+cookbookname$berks install
+cookbookname$berks upload
+cookbookname$knife node run_list add<nodename> 'recipe[cookbookname::anyrecipename]'
+cookbookname$knife node run_list add<nodename> 'recipe[cookbookname]'
+
+-->generate attributes default
+cookbookname$chef generate attributes . default
 
 
 
+
+
+---------------------------------------------------------------------------------------------------------------------------
 
