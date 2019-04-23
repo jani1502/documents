@@ -1,0 +1,418 @@
+INSTALL JAVA8 ON UBUNTU:
+
+
+$ sudo apt-add-repository ppa:webupd8team/java
+
+$ sudo apt-get update
+
+$ sudo apt-get install oracle-java8-installer
+------------------------------------------------------------------------------------------------------------
+
+INSTALL GIT :
+
+$ sudo apt-get install git
+
+INSTALL MAVEN:
+$ sudo apt-get install maven -y
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------
+JENKINS INSTALLATION:ON UBUNTU14.04
+
+$ wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | apt-key add -
+
+$ sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+$ apt-get update
+$ apt-get install Jenkins
+$service jenkins status
+$service jenkins start
+
+JENKINS INSTALL ON UBUNTU:16.04:
+ 
+$ wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+$ echo deb https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
+$ sudo apt-get update
+$ sudo apt-get install jenkins
+$ sudo systemctl start jenkins
+$ sudo systemctl status jenkins
+
+-------------------------------------------------------------------------------------------------------------
+INSTALL ANSIBLE ON UBUNTU 14.04
+
+$ sudo apt-get update
+$ sudo apt-get install software-properties-common
+$ sudo apt-add-repository ppa:ansible/ansible
+$ sudo apt-get update
+$ sudo apt-get install ansible
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------
+INSTALL ANSIBLE ON UBNUTU:16:04
+
+$ sudo apt-add-repository ppa:ansible/ansible
+$ sudo apt-get update
+$ sudo apt-get install ansible
+$ 
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+TOMCAT7 INSTALLATION ON UBNUTU 14.04
+
+sudo apt-get update
+sudo apt-get install tomcat7
+sudo nano /etc/default/tomcat7
+under JAVA_OPTS line below paste below line.
+JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Xmx512m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC"
+
+sudo service tomcat7 restart
+sudo apt-get install tomcat7-docs tomcat7-admin tomcat7-examples
+sudo nano /etc/tomcat7/tomcat-users.xml
+paste below line
+<tomcat-users>
+    <user username="admin" password="password" roles="manager-gui,admin-gui"/>
+</tomcat-users>
+
+sudo service tomcat7 restart
+
+---------------------------------------------------------------------------------------------------------
+
+DOCKER INSTALLATION COMMAND:
+
+sudo apt-get remove docker docker-engine docker.io containerd runc  ---->this cmd to remove old version.
+
+$ sudo apt-get update
+
+$ sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+$ sudo apt-get update
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+-----------------------------------------------------------------------
+second method Docker installation:
+
+
+
+
+
+--------------------------------------------------------------------------------
+two container link
+mysql--wordpres
+
+$ docker run --name janaki -e MYSQL_ROOT_PASSWORD=jani -d mysql:5.7.25
+$ docker run --name janu --link janaki:mysql -d -p 8080:80 wordpress
+
+----------------------------------------------------------------------
+Docker compose installation:
+
+$ sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+$ sudo chmod +x /usr/local/bin/docker-compose
+$docker-compose version
+
+Write docker compose file in yml format:
+$ vi docker-copmose.yml
+version: '3'
+services:
+   db:
+     image: mysql:5.7.22
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: test
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - 8080:80
+     restart: always
+
+:wq
+
+$ docker-compose up -d  --->which execute above compose file.
+$ docker-compose down  --->which delete execute containers.
+
+Docker FIle:
+create file name : vi Dockerfile
+FROM ubuntu:14.04
+MAINTAINER janicharuku@gmail.com 
+RUN apt-get install git
+RUN apt-get update
+CMD ["echo" ,"hello"]
+
+$docker build -t (anynameimage)jani.1  ---> image will created by above file.
+$docker tag jani.1 jani1502/jani.1    --->tag the image name with dockerhub username.
+$docker push jani1502/jani.1 .         ---->dot require for current directory.
+
+--------------------------------------------------------------------
+
+KUBERNETES CLUSTER INSTALLATION:
+
+INSTALL DOCKER CE
+
+$ apt-get update
+$ apt-get update && apt-get install apt-transport-https ca-certificates curl software-properties-common
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+$ add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+$ apt-get update && apt-get install docker-ce=18.06.2~ce~3-0~ubuntu
+$ cat > /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+$ mkdir -p /etc/systemd/system/docker.service.d
+$ systemctl daemon-reload
+$ systemctl restart docker
+
+--------------------------------------------------------------------------------
+
+INSTALL KUBEADM, KUBECTL,KEBLET:
+
+$ apt-get update && apt-get install -y apt-transport-https curl
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+$ cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+$ apt-get update
+$ apt-get install -y kubelet kubeadm kubectl
+$ apt-mark hold kubelet kubeadm kubectl
+
+ON MASTER :
+$ kubeadm init --->create cluster
+
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+ON NODE:
+
+$ kubeadm join 172.31.30.48:6443 --token xpiwx2.3bor7bhw26dlmfwf \
+    --discovery-token-ca-cert-hash sha256:fc619d2ad66d4328ae40c8f50a50c3ceafdde3de1652bbf5ced44b812d271
+
+$ kubectl apply --filename https://git.io/weave-kube-1.6
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+JFROG INSTALLATION:
+
+$ wget https://bintray.com/jfrog/artifactory-pro-rpms/rpm -O bintray-jfrog-artifactory-pro-rpms.repo;
+$sudo mv bintray-jfrog-artifactory-pro-rpms.repo /etc/yum.repos.d/;
+$ yum install jfrog-artifactory-pro
+
+
+JFROG INSTALLATION ON UBUNTU
+$ echo "deb https://jfrog.bintray.com/artifactory-pro-debs {distribution} {components}" | sudo tee -a /etc/apt/sources.list;
+$ sudo apt-get update
+$ sudo apt-get install jfrog-artifactory-pro
+
+-------------------------------------------------------------------------------------------------------------
+
+CHEF INSTALLATION:
+
+-> create account in -->manage.chef.io  ----------------->hosted server
+->install workstation on laptop -->install chefdk   --->on laptop
+-->one instance launch in AWS --> node
+
+-->from hosted server download startedkit  -->extract files  --->which establish connection btw workstation to hosted server.
+-->run bootstrap command in workstation which establish connection btw workstation to node -->it install agent (cc)chef-client.
+-->chef-client create connection between node to server.
+
+$knife bootsrap <publicip node> --ssh-user ubuntu --sudo --identity-file "pemfile location of node" -N <nodename/any name>
+
+cookbooks$chef generate cookbook <cookbookname/any name>
+cookbookname$chef generate recipe . <anyrecipename>
+cookbookname$berks install
+cookbookname$berks upload
+cookbookname$knife node run_list add<nodename> 'recipe[cookbookname::anyrecipename]'
+cookbookname$knife node run_list add<nodename> 'recipe[cookbookname]'
+
+-->generate attributes default
+cookbookname$chef generate attributes . default
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+kitchen convergence
+
+---
+driver:
+  name: vagrant
+  network:
+    -  ["private_network", {ip: "192.168.33.34" }]
+
+provisioner:
+  name: chef_zero
+  # You may wish to disable always updating cookbooks in CI or other testing environments.
+  # For example:
+  #   always_update_cookbooks: <%= !ENV['CI'] %>
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: ubuntu-14.04
+    driver:
+      box: ubuntu/trusty64
+ # - name: centos-7
+
+suites:
+  - name: default
+    run_list:
+      - recipe[mycookbook::default]
+    verifier:
+      inspec_tests:
+        - test/integration/default
+    attributes:
+-----------------------------------------------------------------------------------------------------------------------------------
+ELK INSTALLATION
+
+ELASTIC SEARCH: 4gb
+
+$apt-get update
+
+$apt-get install openjdk-8-jre-headless
+
+$wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.6.3.deb 
+
+$dpkg -i elasticsearch-5.6.3.deb
+
+$vi /etc/elasticsearch/elasticsearch.yml   
+cluster.name :  globo-clustering
+         Node.name : public DNS of Elasticsreach (in production only       private DNS)
+        Network.host :  private ip of elasticsreach 
+
+$sysctl -w vm.max_map_count=262144
+
+$service elasticsearch start 
+
+      http://<ipadress>:9200 
+      SG allow All traffic 
+------------------------------------------------------------------------------------------
+LOGSTASH: 4gb
+
+$apt-get update
+
+$apt-get install openjdk-8-jre-headless
+
+$wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+
+$echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-5.x.list
+
+$apt-get update && apt-get install logstash
+
+$cd /usr/share/logstash 
+
+logstash$ bin/logstash -e "input { stdin {} } output { stdout {} }" enter some value.
+
+$cd /etc/logstash/conf.d
+
+conf.d$vi beats.conf
+input {
+   beats {
+       port => "5044"
+   }
+}
+output {
+   elasticsearch {
+       hosts => [ "54.255.170.251:9200" ]
+       index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+       document_type => "%{[@metadata][type]}"
+   }
+}
+
+$service logstash restart
+$cd /usr/share/logstash
+logstash$ bin/logstash -f /etc/logstash/conf.d/
+
+
+
+
+$service logstash restart
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+KIBANA INSTALLATION:2gb
+
+$apt-get update
+
+$wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+
+$echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-5.x.list
+
+$apt-get update
+
+$apt-get install kibana
+
+$vi /etc/kibana/kibana.yml
+
+server.host: private <ipaddress> of kibina
+server.name: private <hostname> of kibina
+elasticsearch.url: <elasticsearchurl> of  electric search
+
+$service kibana start
+
+http://kinbapublicip:5601 
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+INSTALL WINLOGBEAT ON WINDOWS:
+
+In google-->https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-5.6.3-windows-x86_64.zip
+
+after download file -->extract in c:programfiles/winbeat/
+
+open power shell--->navigate that location--->c:/programfiles/winbeat.yml
+
+tags: ["ap-southeast-1"]
+fields:
+globo_environment: production
+
+output.logstash:
+# The Logstash hosts
+hosts: ["13.229.50.243:5044"]--->logstash publicip
+
+open powershell--->winbeat
+winbeat$Invoke-WebRequest -Method Put -InFile winlogbeat.template.json -Uri  http://54.255.170.251:9200/_template/winlogbeat?pretty -ContentType application/json
+
+
+$
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
