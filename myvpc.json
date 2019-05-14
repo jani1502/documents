@@ -1,0 +1,71 @@
+{
+"AWSTemplateFormatVersion" : "2010-09-09",
+"Description": "create my vpc",
+
+
+
+"Parameters": {
+    
+
+},
+
+
+"Resources": {
+    
+    "myvpc": {
+    "Type": "AWS::EC2::VPC",
+    "Properties": {
+     "CidrBlock": "192.168.0.0/16",
+    }
+    },      
+        
+    "MyIgw": {
+    "Type": "AWS::EC2::InternetGateway",
+     "Properties": {
+            
+    }
+    },
+   "AttachGateway": {
+     "Type": "AWS::EC2::VPCGatewayAttachment",
+     "Properties": {
+      "VpcId": 
+         { "Ref":"myvpc" },
+        "InternetGatewayId": { "Ref": "MyIgw" }
+    }
+    },
+
+    
+    
+    
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": "us-west-2a",
+        "VpcId": 
+        { "Ref": "myvpc" },
+        
+        "CidrBlock": "192.168.1.0/24"
+        
+      }
+    },
+    
+    
+    "PrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": "us-west-2b",
+        "VpcId": 
+        
+        { "Ref": "myvpc" },
+        "CidrBlock": "192.168.2.0/24"
+        
+      }
+    }
+    
+        
+},
+    
+"Outputs" : {
+  
+}
+}
